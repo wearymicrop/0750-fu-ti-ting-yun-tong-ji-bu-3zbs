@@ -15,6 +15,7 @@
 | M5 豁免计入 | 核对确实适用的审批及覆盖秒数 | `GET /api/exemptions/{sample}` | `app/modules/exemptions/register.py` `app/modules/exemptions/apply.py` | `tests/test_exemptions.py` |
 | M6 可用率核对 | 逐台核对四类秒数、差额和可用率 | `GET /api/reconcile/{sample}` | `app/modules/reconcile/balance.py` | `tests/test_reconcile.py` |
 | M7 班报归档 | 保存班报、查询证据、重跑和下载 | `POST /api/runs` | `app/modules/reports/store.py` `app/modules/reports/manifest.py` `app/modules/reports/evidence.py` | `tests/test_reports.py` |
+| M8 班次交接 | 按下班点结出本班可证实秒数，余量连同报码审批结转下一班 | `GET /api/handover/preview/{sample}` `POST /api/runs/{id}/handovers` | `app/modules/handover/settle.py` `app/modules/handover/store.py` `app/modules/handover/routes.py` | `tests/test_handover.py` |
 
 ## 陷阱登记
 
@@ -29,6 +30,10 @@
 | TRAP-21 | `dirty/shifts.json` 第 5 行引用未登记设备 | 凭空增加营业窗口 | 隔离缺设备引用的班次 | `app/modules/schedules/calendar.py` | `tests/test_schedules.py::test_unknown_device_shift` |
 | TRAP-23 | `clean/shifts.json` 第 1 行结束时刻跨入次日 | 午夜后营业漏计 | 按次日端点展开，右端排除 | `app/modules/schedules/calendar.py` | `tests/test_schedules.py::test_midnight_shift` |
 | TRAP-25 | `dirty/shifts.json` 第 1、3 行交叠半小时 | 双计营业秒 | 保留原班次并计算并集 | `app/modules/schedules/calendar.py` | `tests/test_schedules.py::test_overlapping_shifts_are_unioned` |
+| TRAP-26 | `handover/events.json` 的 H-102 供电停运跨 02:00 接班点 | 整段留给末班导致本班无法按时交班，或只截到交班点却丢失余量 | 切点拆成已结与承接两段，同一报码的已结秒与承接秒同时保留，`[start,end)` 保证切点不重复计秒 | `app/modules/handover/settle.py` | `tests/test_handover.py::test_carried_events_keep_codes_and_split_seconds` |
+| TRAP-27 | `handover/events.json` 的 H-103 未恢复报码跨班 | 在本班提前坐实停运时长，或下一班漏承接 | 缺证秒随报码整体结转，单列 `unconfirmed_seconds`，待恢复后由下一班补证 | `app/modules/handover/settle.py` | `tests/test_handover.py::test_carried_events_keep_codes_and_split_seconds` |
+| TRAP-28 | 交接点取任意时刻（如 02:30） | 班次中途切账，责任边界与班表错位 | 交接时刻必须与某条班表下班时刻对齐，否则 `INVALID_HANDOVER` | `app/modules/handover/settle.py` | `tests/test_handover.py::test_handover_must_align_with_shift_end` |
+| TRAP-29 | 同一班次重跑/并发再次结班 | 新增或重复结转余量 | `(report_id, handover_at)` 唯一约束，重复提交 409，并发只成一份，失败保留旧版 | `app/modules/handover/store.py` | `tests/test_handover.py::test_concurrent_settlement_creates_single_record` `tests/test_handover.py::test_failed_settlement_keeps_previous_record` |
 
 ## 联合回归
 
@@ -36,3 +41,5 @@
 - 已隔离、已采信和重传行数对平输入。见 `tests/test_events.py::test_event_counts_conserve`。
 - 每台设备的四类秒数对平营业并集，片段连续。见 `tests/test_reconcile.py::test_per_device_conservation_and_contiguity`。
 - 并发保存只写一份 SQLite 记录。见 `tests/test_reports.py::test_duplicate_posts_commit_once`。
+- 交接切点满足已结+承接=营业并集，且逐台守恒。见 `tests/test_handover.py::test_per_device_conservation_on_multi_device_sample`。
+- 交接下载附件与页面读取同一份记录，并附留档输入摘要。见 `tests/test_handover.py::test_export_matches_page_record`。

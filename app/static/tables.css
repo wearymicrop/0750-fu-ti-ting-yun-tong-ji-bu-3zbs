@@ -9,3 +9,7 @@ dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 12px; }
 dt { color: var(--muted); }
 dd { margin: 0; overflow-wrap: anywhere; }
 #run-feedback { color: var(--accent); margin-top: 9px; }
+#handover-mode { margin: 0 0 10px; }
+#handover-feedback { color: var(--accent); margin-top: 9px; min-height: 1.2em; }
+#handover h3 { margin: 14px 0 8px; font-size: 13px; color: var(--muted); font-weight: 600; }
+#handover .panel { min-width: 0; }

@@ -8,7 +8,7 @@ const labels = {
   MISSING_APPROVAL: '缺审批凭据', OUTSIDE_OBSERVATION: '超出采信窗口', NON_SERVICE: '非营业时段',
   MATCHED: '时长已对平', MISSING_EVIDENCE: '时长对平 · 有缺证', NO_SERVICE: '无营业时段',
   UNBALANCED: '时长有差额', CONFIRMED: '已确认', approved: '已批准', pending: '待审批', denied: '未批准',
-  clean: '干净样例', dirty: '异常样例', custom: '本地班报',
+  clean: '干净样例', dirty: '异常样例', handover: '跨班交接样例', custom: '本地班报',
 };
 export const label = value => labels[value] ?? value ?? '—';
 export const num = value => value == null ? '—' : value.toLocaleString('zh-CN');

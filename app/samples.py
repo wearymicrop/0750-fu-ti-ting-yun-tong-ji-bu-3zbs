@@ -6,7 +6,7 @@ from app.errors import BusinessError
 
 
 def load_sample(name):
-    if name not in {'clean', 'dirty'}:
+    if name not in {'clean', 'dirty', 'handover'}:
         raise BusinessError('SAMPLE_NOT_FOUND', '样例不存在', 404)
     folder = ROOT / 'sample_data' / name
     data = json.loads((folder / 'window.json').read_text(encoding='utf-8'))

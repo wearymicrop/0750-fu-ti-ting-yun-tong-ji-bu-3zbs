@@ -4,6 +4,7 @@ import {drawOverview} from './reconcile.mjs';
 import {drawEvidence} from './evidence.mjs';
 import {drawStage} from './stages.mjs';
 import {drawArchive, drawArchived} from './archive.mjs';
+import {mountHandover, resetHandover} from './handover.mjs';
 
 const links = [...document.querySelectorAll('[data-section]')];
 const state = {sample: 'dirty', result: null, report: null, evidenceKey: 0};
@@ -31,10 +32,13 @@ function syncView() {
   $('page-title').textContent = active.textContent.trim();
   $('overview').hidden = section !== 'reconcile';
   $('archive').hidden = section !== 'runs';
-  $('stage').hidden = ['reconcile', 'runs'].includes(section);
+  $('handover').hidden = section !== 'handover';
+  $('stage').hidden = ['reconcile', 'runs', 'handover'].includes(section);
   if (section === 'runs') {
     drawArchived(state.report);
     drawArchive(openReport).catch(error => status(error.message));
+  } else if (section === 'handover') {
+    mountHandover(state).catch(error => status(error.message));
   } else if (state.result) {
     if (section === 'reconcile') drawOverview(state.result, inspect);
     else drawStage(section, state.result);
@@ -44,6 +48,7 @@ function syncView() {
 function showResult(result) {
   state.evidenceKey++;
   state.result = result;
+  resetHandover();
   $('range').textContent = `${stamp(result.window.start)} → ${stamp(result.window.end)}`;
   syncView();
 }

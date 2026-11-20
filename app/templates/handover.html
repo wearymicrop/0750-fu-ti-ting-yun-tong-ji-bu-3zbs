@@ -1,0 +1,33 @@
+<div id="handover" hidden>
+  <section class="kpis" id="handover-kpis" aria-label="交接指标"></section>
+  <div class="workspace">
+    <section class="panel" aria-labelledby="handover-settle-title">
+      <div class="panel-heading">
+        <div><p class="eyebrow">本班结算</p><h2 id="handover-settle-title">已核时长与承接余量</h2></div>
+        <div class="tools">
+          <label for="handover-at">交接点</label>
+          <select id="handover-at"></select>
+          <button type="button" class="primary" id="handover-settle" hidden>结班存档</button>
+        </div>
+      </div>
+      <p id="handover-mode" class="eyebrow"></p>
+      <div id="handover-summary" class="table-scroll"></div>
+      <h3>逐台分解</h3>
+      <div id="handover-devices" class="table-scroll"></div>
+      <p id="handover-feedback" role="status"></p>
+    </section>
+    <section class="panel" aria-labelledby="handover-carry-title">
+      <div class="panel-heading"><div><p class="eyebrow">下一班承接</p><h2 id="handover-carry-title">余量报码与审批</h2></div></div>
+      <div id="handover-carry" class="table-scroll"></div>
+    </section>
+    <section class="panel" aria-labelledby="handover-code-title">
+      <div class="panel-heading"><div><p class="eyebrow">采用依据</p><h2 id="handover-code-title">报码与审批</h2></div></div>
+      <div id="handover-codes" class="table-scroll"></div>
+      <div id="handover-permits" class="table-scroll"></div>
+    </section>
+    <section class="panel" aria-labelledby="handover-archive-title">
+      <div class="panel-heading"><div><p class="eyebrow">留痕</p><h2 id="handover-archive-title">本班交接记录</h2></div></div>
+      <div id="handover-archive" class="table-scroll"></div>
+    </section>
+  </div>
+</div>
